@@ -25,7 +25,7 @@ function formatIso(iso?: string) {
 
 export default function AdminDashboard({ user }: { user: SessionUser }) {
   const db = useDBSnapshot()
-  const [tab, setTab] = useState<'customers' | 'workers' | 'works'>('customers')
+  const [tab, setTab] = useState<'customers' | 'workers' | 'works' | 'settings'>('customers')
   const [profileModalWorkerId, setProfileModalWorkerId] = useState<string | null>(null)
 
   return (
@@ -59,12 +59,21 @@ export default function AdminDashboard({ user }: { user: SessionUser }) {
           >
             Works ({db.requests.length})
           </button>
+          <button
+            className={`rounded-xl border px-3 py-2 text-sm ${
+              tab === 'settings' ? 'border-white/20 bg-white/10' : 'border-white/10 hover:bg-white/5'
+            }`}
+            onClick={() => setTab('settings')}
+          >
+            Settings
+          </button>
         </div>
       </div>
 
       {tab === 'customers' ? <CustomersAdmin /> : null}
       {tab === 'workers' ? <WorkersAdmin onShowProfile={setProfileModalWorkerId} /> : null}
       {tab === 'works' ? <WorksAdmin /> : null}
+      {tab === 'settings' ? <SettingsAdmin /> : null}
 
       <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-white/70">
         Tip: Deactivated users will disappear from the sign-in list.
@@ -499,6 +508,117 @@ function WorkerRow({ w, onShowProfile }: { w: WorkerProfile; onShowProfile: (id:
         >
           Delete
         </button>
+      </div>
+    </div>
+  )
+}
+
+function SettingsAdmin() {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+
+  const ADMIN_PASSWORD_KEY = 'fannu_admin_password'
+
+  const handleChangePassword = () => {
+    setMessage('')
+    setError('')
+
+    // Get stored password (default is 'admin123')
+    const storedPassword = localStorage.getItem(ADMIN_PASSWORD_KEY) || 'admin123'
+
+    if (currentPassword !== storedPassword) {
+      setError('Current password is incorrect')
+      return
+    }
+
+    if (newPassword.length < 4) {
+      setError('New password must be at least 4 characters')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('New passwords do not match')
+      return
+    }
+
+    // Store new password
+    localStorage.setItem(ADMIN_PASSWORD_KEY, newPassword)
+    setMessage('Password changed successfully!')
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+  }
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white">
+      <h2 className="text-lg font-semibold mb-4">Admin Settings</h2>
+      
+      <div className="space-y-4 max-w-md">
+        <div className="border-b border-white/10 pb-4 mb-4">
+          <h3 className="text-sm font-medium text-white/80 mb-3">Change Password</h3>
+          
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-white/60 mb-1">Current Password</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white placeholder-white/40 focus:border-[#c9a227] focus:outline-none"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xs text-white/60 mb-1">New Password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white placeholder-white/40 focus:border-[#c9a227] focus:outline-none"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xs text-white/60 mb-1">Confirm New Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white placeholder-white/40 focus:border-[#c9a227] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="mt-3 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+              <p className="text-red-300 text-sm">{error}</p>
+            </div>
+          )}
+
+          {message && (
+            <div className="mt-3 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
+              <p className="text-green-300 text-sm">{message}</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleChangePassword}
+            className="mt-4 w-full rounded-xl bg-gradient-to-r from-[#1e3a5f] to-[#2a4a73] px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-[#2a4a73] hover:to-[#1e3a5f] transition-all"
+          >
+            Change Password
+          </button>
+        </div>
+
+        <div className="text-xs text-white/40">
+          <p>Admin Email: retey.ay@hotmail.com</p>
+          <p className="mt-1">Default password: admin123</p>
+        </div>
       </div>
     </div>
   )

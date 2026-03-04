@@ -28,7 +28,6 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   const [loginError, setLoginError] = useState('')
 
   const ADMIN_EMAIL = 'retey.ay@hotmail.com'
-  const ADMIN_PASSWORD = 'admin123'
 
   const handleRoleSelect = (role: 'customer' | 'worker') => {
     const options = role === 'customer' 
@@ -47,26 +46,29 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   const handleAdminLogin = () => {
     setLoginError('')
     
-    if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      setLoginError('Invalid email address')
+    // Get stored password (default is 'admin123')
+    const storedPassword = localStorage.getItem('fannu_admin_password') || 'admin123'
+    
+    // Find admin by email (case insensitive)
+    const admin = db.admins.find((a) => 
+      a.active && a.email?.toLowerCase() === email.toLowerCase().trim()
+    )
+    
+    if (!admin) {
+      setLoginError('Admin account not found')
       return
     }
     
-    if (password !== ADMIN_PASSWORD) {
+    if (password !== storedPassword) {
       setLoginError('Invalid password')
       return
     }
     
-    const admin = db.admins.find((a) => a.active && a.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase())
-    if (admin) {
-      onLogin({
-        id: admin.id,
-        role: 'admin',
-        name: admin.name,
-      })
-    } else {
-      setLoginError('Admin account not found')
-    }
+    onLogin({
+      id: admin.id,
+      role: 'admin',
+      name: admin.name,
+    })
   }
 
   if (showAdminLogin) {
