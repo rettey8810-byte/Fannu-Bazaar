@@ -4,6 +4,7 @@ import AdminDashboard from './components/AdminDashboard'
 import CustomerDashboard from './components/CustomerDashboard'
 import WorkerDashboard from './components/WorkerDashboard'
 import InstallButton from './components/InstallButton'
+import BottomNav from './components/BottomNav'
 import { seedIfEmpty } from './lib/db'
 import type { SessionUser } from './lib/types'
 
@@ -45,7 +46,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-6">
         {user.role === 'admin' ? (
           <AdminDashboard user={user} />
         ) : user.role === 'customer' ? (
@@ -55,6 +56,7 @@ export default function App() {
         )}
       </main>
       
+      <BottomNav userRole={user.role} onSignOut={() => setUser(null)} />
       <InstallButton />
     </div>
   )
