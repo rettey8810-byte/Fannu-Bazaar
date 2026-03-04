@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+﻿import { useMemo, useState, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import {
   acceptRequest,
@@ -15,8 +15,7 @@ import type { ServiceCategory, ServiceRequest, SessionUser } from '../lib/types'
 import WorkerProfileForm from './WorkerProfileForm'
 import { 
   Search, Briefcase, CheckCircle, Clock, Star, User, 
-  Wrench, DollarSign, Calendar, MapPin, ArrowRight,
-  Filter, Award
+  Wrench, DollarSign, Calendar, MapPin
 } from 'lucide-react'
 
 const THEME = {
@@ -195,7 +194,7 @@ function CardShell({ children, className = '' }: { children: ReactNode; classNam
   return <div className={`bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden ${className}`}>{children}</div>
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: ServiceRequest['status'] }) {
   const statusColors: Record<string, { bg: string; text: string }> = {
     'open': { bg: 'bg-blue-100', text: 'text-blue-700' },
     'pending_customer_confirmation': { bg: 'bg-amber-100', text: 'text-amber-700' },
@@ -238,11 +237,11 @@ function OpenRequestCard({ req, workerId, recommended }: { req: ServiceRequest; 
       <div className="p-6">
         <p className="text-gray-600 mb-4">{req.description}</p>
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm text-gray-500">Urgency: <span className="font-medium" style={{ color: req.urgency === 'urgent' ? '#ef4444' : req.urgency === 'high' ? '#f97316' : '#6b7280' }}>{req.urgency}</span></span>
+          <span className="text-sm text-gray-500">Urgency: <span className="font-medium" style={{ color: req.urgency === 'high' ? '#f97316' : '#6b7280' }}>{req.urgency}</span></span>
         </div>
         <div className="grid gap-4">
           <button onClick={() => acceptRequest({ requestId: req.id, workerId })} className={`w-full py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all ${alreadyInterested ? 'bg-gray-100 text-gray-600' : 'text-white'}`} style={alreadyInterested ? {} : { background: THEME.primary }}>
-            {alreadyInterested ? 'Already Interested ?' : "I'm Interested"}
+            {alreadyInterested ? 'Already Interested ✓' : "I'm Interested"}
           </button>
           <div className="p-4 rounded-2xl border border-gray-100 bg-gray-50">
             <div className="text-sm font-semibold text-gray-700 mb-3">Send Quotation (MVR)</div>
@@ -287,8 +286,8 @@ function WorkerJobCard({ req }: { req: ServiceRequest }) {
               <div><div className="font-semibold text-gray-800">{customer.name}</div></div>
             </div>
             <div className="grid gap-1 text-sm text-gray-600 md:grid-cols-2">
-              <div>?? {customer.phone ?? '-'}</div>
-              <div>?? {customer.email ?? '-'}</div>
+              <div>📞 {customer.phone ?? '-'}</div>
+              <div>✉️ {customer.email ?? '-'}</div>
             </div>
           </div>
         )}
@@ -311,7 +310,7 @@ function WorkerActionCard({ req, workerId }: { req: ServiceRequest; workerId: st
   const customer = useMemo(() => db.customers.find((c) => c.id === req.customerId), [db.customers, req.customerId])
 
   return (
-    <CardShell className="border-l-4" style={{ borderLeftColor: THEME.primary }}>
+    <CardShell className="border-l-4 border-teal-500">
       <div className="p-6 border-b border-gray-100" style={{ background: THEME.gray50 }}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -332,8 +331,8 @@ function WorkerActionCard({ req, workerId }: { req: ServiceRequest; workerId: st
               <div><div className="font-semibold text-gray-800">{customer.name}</div></div>
             </div>
             <div className="grid gap-1 text-sm text-gray-600 md:grid-cols-2">
-              <div>?? {customer.phone ?? '-'}</div>
-              <div>?? {customer.email ?? '-'}</div>
+              <div>📞 {customer.phone ?? '-'}</div>
+              <div>✉️ {customer.email ?? '-'}</div>
             </div>
           </div>
         )}

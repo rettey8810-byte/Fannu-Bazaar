@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   addReview,
@@ -16,7 +16,7 @@ import WorkerProfileModal from './WorkerProfileModal'
 import type { ServiceCategory, ServiceRequest, SessionUser, WorkerProfile } from '../lib/types'
 import { 
   Plus, Search, CheckCircle, Clock, Star, User, Briefcase, 
-  ChevronRight, Calendar, DollarSign, MapPin, Wrench
+  Calendar, DollarSign, MapPin, Wrench
 } from 'lucide-react'
 
 const THEME = {
@@ -195,8 +195,8 @@ export default function CustomerDashboard({ user }: { user: SessionUser }) {
   )
 }
 
-function CardShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden ${className}`}>{children}</div>
+function CardShell({ children, className = '', style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
+  return <div className={`bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden ${className}`} style={style}>{children}</div>
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -245,7 +245,7 @@ function CustomerRequestCard({ req, userId, hasReviewed, onShowWorkerProfile }: 
                 <div className="w-12 h-12 rounded-xl bg-teal-500 flex items-center justify-center"><User className="w-6 h-6 text-white" /></div>
                 <div>
                   <div className="font-semibold text-gray-800">{assignedWorker.name}</div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500"><Star className="w-4 h-4 text-amber-400 fill-current" /><span>{assignedWorker.ratingAvg.toFixed(1)} ({assignedWorker.ratingCount})</span><span>�</span><span>{assignedWorker.jobsDone} jobs</span></div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500"><Star className="w-4 h-4 text-amber-400 fill-current" /><span>{assignedWorker.ratingAvg.toFixed(1)} ({assignedWorker.ratingCount})</span><span>•</span><span>{assignedWorker.jobsDone} jobs</span></div>
                 </div>
               </div>
               <button onClick={() => onShowWorkerProfile(assignedWorker.id)} className="px-4 py-2 rounded-xl text-sm font-medium border border-teal-200 hover:bg-teal-50 transition-colors" style={{ color: THEME.primary }}>View Profile</button>
@@ -315,8 +315,8 @@ function WorkerCard({ worker, onShowProfile }: { worker: WorkerProfile; onShowPr
         {worker.about && <p className="text-gray-600 text-sm mb-4 line-clamp-2">{worker.about}</p>}
         {worker.skills.length > 0 && <div className="flex flex-wrap gap-2 mb-4">{worker.skills.slice(0, 4).map((skill) => <span key={skill} className="px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-600">{skill}</span>)}{worker.skills.length > 4 && <span className="px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-600">+{worker.skills.length - 4}</span>}</div>}
         <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-          {worker.phone && <div className="flex items-center gap-2 text-gray-600"><div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center"><span className="text-green-600 text-xs">??</span></div><span className="truncate">{worker.phone}</span></div>}
-          {worker.whatsapp && <div className="flex items-center gap-2 text-gray-600"><div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center"><span className="text-green-600 text-xs">??</span></div><span className="truncate">{worker.whatsapp}</span></div>}
+          {worker.phone && <div className="flex items-center gap-2 text-gray-600"><div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center"><span className="text-green-600 text-xs">📞</span></div><span className="truncate">{worker.phone}</span></div>}
+          {worker.whatsapp && <div className="flex items-center gap-2 text-gray-600"><div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center"><span className="text-green-600 text-xs">💬</span></div><span className="truncate">{worker.whatsapp}</span></div>}
         </div>
         <button onClick={() => onShowProfile(worker.id)} className="w-full py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all" style={{ background: THEME.primary }}>View Full Profile</button>
       </div>
@@ -339,7 +339,7 @@ function CustomerActionCard({ req, customerId, onShowWorkerProfile }: any) {
   if (!action) return null
 
   return (
-    <CardShell className="border-l-4" style={{ borderLeftColor: THEME.primary }}>
+    <CardShell className="border-l-4 border-teal-500">
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div><h3 className="text-lg font-bold text-gray-800 mb-1">{req.title}</h3><StatusBadge status={req.status} /></div>
@@ -350,7 +350,7 @@ function CustomerActionCard({ req, customerId, onShowWorkerProfile }: any) {
           <div className="mb-4 p-4 rounded-2xl border border-gray-100 bg-gray-50">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center"><User className="w-5 h-5" style={{ color: THEME.primary }} /></div>
-              <div><div className="font-medium text-gray-800">{assignedWorker.name}</div><div className="text-sm text-gray-500">? {assignedWorker.ratingAvg.toFixed(1)} � {assignedWorker.jobsDone} jobs</div></div>
+              <div><div className="font-medium text-gray-800">{assignedWorker.name}</div><div className="text-sm text-gray-500">⭐ {assignedWorker.ratingAvg.toFixed(1)} • {assignedWorker.jobsDone} jobs</div></div>
               <button onClick={() => onShowWorkerProfile(assignedWorker.id)} className="ml-auto text-sm font-medium" style={{ color: THEME.primary }}>View</button>
             </div>
           </div>

@@ -30,7 +30,7 @@ const skillIcons = [
 export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void }) {
   const db = useDBSnapshot()
   const [activeTab, setActiveTab] = useState<'welcome' | 'login' | 'signup'>('welcome')
-  const [role, setRole] = useState<'customer' | 'worker'>('customer')
+  const [role, _setRole] = useState<'customer' | 'worker'>('customer')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -38,7 +38,7 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   const [loginError, setLoginError] = useState('')
 
   const handleRoleSelect = (selectedRole: 'customer' | 'worker') => {
-    setRole(selectedRole)
+    _setRole(selectedRole)
     setActiveTab('signup')
   }
 
