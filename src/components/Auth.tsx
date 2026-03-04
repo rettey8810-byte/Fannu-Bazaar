@@ -27,7 +27,7 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [loginError, setLoginError] = useState('')
 
-  const ADMIN_EMAIL = 'rettey.ay@hotmail.com'
+  const ADMIN_EMAIL = 'retey.ay@hotmail.com'
   const ADMIN_PASSWORD = 'admin123'
 
   const handleRoleSelect = (role: 'customer' | 'worker') => {
