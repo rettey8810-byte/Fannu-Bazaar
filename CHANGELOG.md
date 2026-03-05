@@ -1,0 +1,107 @@
+# Changelog
+
+All notable changes to the Fannu Bazaar project will be documented in this file.
+
+## [2.0.0] - 2025-03-05
+
+### Added
+- **Hero Section**: Added comprehensive hero section to landing page explaining platform functionality and benefits
+- **Modern Dashboard Redesign**: Complete UI overhaul for Admin, Worker, and Customer dashboards
+- **Overview Dashboard**: New statistics overview with real-time metrics for admins
+- **Documentation**: Added comprehensive README, CHANGELOG, and User Manual
+- **Top Workers Section**: Admin dashboard now displays top-rated workers
+- **Recent Jobs Panel**: Quick access to recent service requests in admin view
+- **Stat Cards**: Visual statistics cards showing key platform metrics
+
+### Changed
+- **UI Theme**: Migrated to mint green theme (#10B981) across all dashboards for consistency
+- **Admin Dashboard**: Complete redesign with card-based layouts and improved navigation
+- **Card Components**: Redesigned all cards with better shadows, rounded corners, and hover effects
+- **Navigation**: Improved tab-based navigation with icons and active states
+- **Settings Page**: Redesigned admin settings with better form layouts
+
+### Fixed
+- **Admin Login**: Fixed persistent "Invalid email or password" error with fallback account creation
+- **Password Handling**: Corrected password validation for all user types
+- **Build Errors**: Resolved all TypeScript compilation errors
+
+## [1.5.0] - 2025-02-28
+
+### Added
+- **Google OAuth**: Implemented Google Sign-In via Supabase Auth
+- **Role Picker**: Added role selection modal after OAuth authentication
+- **Password Fields**: Added password support for customer and worker registration
+- **Admin Account Creation**: Added `createAdmin` helper function for on-the-fly admin creation
+
+### Changed
+- **Auth Flow**: Improved authentication flow with password validation
+- **Login UI**: Redesigned login page with modern card-based layout
+
+### Removed
+- **Facebook Login**: Removed Facebook OAuth due to regional access restrictions
+
+## [1.4.0] - 2025-02-20
+
+### Added
+- **Completed Jobs Tabs**: Separate tabs for completed jobs in Customer and Worker dashboards
+- **Activate/Deactivate**: Admin can now toggle user active status
+- **Role Selection**: Improved role selection UI during signup
+- **Find/Offer Skills**: Functional buttons for skill discovery in signup flow
+
+### Fixed
+- **Signup Flow**: Fixed non-functional "Find Skills / Offer Skills" buttons
+- **Type Errors**: Resolved TypeScript type mismatches in dashboard components
+
+## [1.3.0] - 2025-02-15
+
+### Added
+- **Worker Profile Modal**: Detailed worker profile view accessible from admin dashboard
+- **Admin Settings**: Password change functionality for admin accounts
+- **Database Seeding**: Automatic database seeding for demo accounts
+
+### Changed
+- **Theme Colors**: Updated to ASANA-style teal theme (#14b8a6)
+- **Card Layouts**: Consistent card-based design across all dashboards
+
+## [1.2.0] - 2025-02-10
+
+### Added
+- **Full Workflow**: Complete job lifecycle from request to payment
+- **Inspection Flow**: Inspection scheduling and confirmation system
+- **Quote System**: Worker quotation submission and customer approval
+- **Payment Tracking**: Payment status management
+
+### Fixed
+- **Database Operations**: Fixed corrupted `createWorker` function
+- **Request Filtering**: Corrected request status filtering logic
+
+## [1.1.0] - 2025-02-05
+
+### Added
+- **Worker Categories**: Service category filtering for workers
+- **Search Functionality**: Search workers and requests by various criteria
+- **Rating System**: Worker rating and review system
+- **Real-time Updates**: Live UI updates using event listeners
+
+### Changed
+- **UI Components**: Improved button and input styling
+- **Responsive Design**: Better mobile responsiveness
+
+## [1.0.0] - 2025-02-01
+
+### Added
+- **Initial Release**: First version of Fannu Bazaar platform
+- **Three User Roles**: Customer, Worker, and Admin dashboards
+- **Service Requests**: Customer can create service requests
+- **Worker Discovery**: Browse workers by category
+- **Mock Authentication**: Demo login system with seeded accounts
+- **LocalStorage Database**: Client-side data persistence
+- **Basic UI**: Initial dashboard layouts with Tailwind CSS
+
+---
+
+## Version Naming Convention
+
+- **MAJOR**: Significant feature additions, architectural changes, or breaking changes
+- **MINOR**: New features, improvements, or non-breaking changes
+- **PATCH**: Bug fixes, documentation updates, or minor improvements

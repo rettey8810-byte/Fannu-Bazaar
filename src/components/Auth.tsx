@@ -263,48 +263,104 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
     setLoginError('Invalid email or password')
   }
 
-  // Welcome Screen
+  // Welcome Screen with Hero Section
   if (activeTab === 'welcome') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `linear-gradient(135deg, ${THEME.bg} 0%, #ffffff 100%)` }}>
-        <div className="w-full max-w-sm">
-          {/* Logo */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-md mb-3">
-              <img src="/logo.png" alt="Fannu Bazaar" className="w-12 h-12 object-contain" />
+      <div className="min-h-screen" style={{ background: `linear-gradient(135deg, ${THEME.bg} 0%, #ffffff 100%)` }}>
+        {/* Hero Section */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-3xl shadow-lg mb-6">
+              <img src="/logo.png" alt="Fannu Bazaar" className="w-14 h-14 object-contain" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">Fannu Bazaar</h1>
-            <p className="text-gray-500 text-sm">Maldives Skills Marketplace</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Find Skilled Workers.<br />
+              <span style={{ color: THEME.primary }}>Offer Your Services.</span>
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              The Maldives' premier marketplace connecting customers with verified skilled professionals. 
+              Get quality work done or grow your service business.
+            </p>
           </div>
 
-          {/* Main Card */}
-          <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
-            <WelcomeIllustration />
-            
-            <h2 className="text-xl font-bold text-gray-800 text-center mb-2">Welcome</h2>
-            <p className="text-gray-500 text-center text-sm mb-6">Connect with skilled professionals or offer your services</p>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => setActiveTab('signup')}
-                className="w-full py-3.5 rounded-xl font-semibold text-white shadow-md transition-all active:scale-95"
-                style={{ background: THEME.primary }}
-              >
-                Get Started
-              </button>
-              <button
-                onClick={() => setActiveTab('login')}
-                className="w-full py-3.5 rounded-xl font-semibold bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all"
-              >
-                I already have an account
-              </button>
+          {/* How It Works */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: THEME.primaryLight }}>
+                <span className="text-2xl font-bold" style={{ color: THEME.primary }}>1</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Post or Find</h3>
+              <p className="text-sm text-gray-500">Customers post service needs. Workers browse and accept jobs matching their skills.</p>
             </div>
+            <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#FEF3C7' }}>
+                <span className="text-2xl font-bold text-amber-600">2</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Connect & Quote</h3>
+              <p className="text-sm text-gray-500">Get matched, schedule inspections, receive quotes, and agree on terms.</p>
+            </div>
+            <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#D1FAE5' }}>
+                <span className="text-2xl font-bold text-green-600">3</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Complete & Review</h3>
+              <p className="text-sm text-gray-500">Work gets done, payment is processed, and both parties leave reviews.</p>
+            </div>
+          </div>
+
+          {/* Benefits */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <div className="bg-white rounded-2xl p-6 shadow-md">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: THEME.primaryLight }}>
+                  <Search className="w-6 h-6" style={{ color: THEME.primary }} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">For Customers</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Find verified skilled workers quickly</li>
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Compare quotes and reviews</li>
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Track job progress in real-time</li>
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Secure payment handling</li>
+              </ul>
+            </div>
+            <div className="bg-white rounded-2xl p-6 shadow-md">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50">
+                  <Briefcase className="w-6 h-6 text-amber-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">For Workers</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Access to more job opportunities</li>
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Build your reputation with reviews</li>
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Manage jobs and schedule easily</li>
+                <li className="flex items-center gap-2"><span style={{ color: THEME.primary }}>✓</span> Get paid securely and on time</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => setActiveTab('signup')}
+              className="px-8 py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all text-lg"
+              style={{ background: THEME.primary }}
+            >
+              Get Started Free
+            </button>
+            <button
+              onClick={() => setActiveTab('login')}
+              className="px-8 py-4 rounded-xl font-semibold bg-white text-gray-700 border-2 border-gray-200 hover:bg-gray-50 transition-all text-lg"
+            >
+              I already have an account
+            </button>
           </div>
 
           {/* Admin Link */}
-          <div className="text-center">
-            <button onClick={() => setShowAdminLogin(true)} className="text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1">
-              <UserCog className="w-3 h-3" /> Admin Access
+          <div className="text-center mt-8">
+            <button onClick={() => setShowAdminLogin(true)} className="text-sm text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 mx-auto">
+              <UserCog className="w-4 h-4" /> Admin Access
             </button>
           </div>
         </div>
