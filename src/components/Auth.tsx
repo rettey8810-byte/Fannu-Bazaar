@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { SessionUser } from '../lib/types'
 import { useDBSnapshot } from '../lib/hooks'
 import { createCustomer, createWorker, seedIfEmpty } from '../lib/db'
+import { supabase } from '../lib/supabase'
 import { 
   Mail, Lock, ArrowLeft, UserCog, 
   Chrome, Facebook, Search, Briefcase
@@ -44,7 +45,7 @@ const WelcomeIllustration = () => (
 
 export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void }) {
   const db = useDBSnapshot()
-  const [activeTab, setActiveTab] = useState<'welcome' | 'login' | 'signup' | 'signup_form'>('welcome')
+  const [activeTab, setActiveTab] = useState<'welcome' | 'login' | 'signup' | 'signup_form' | 'oauth_role'>('welcome')
   const [role, setRole] = useState<'customer' | 'worker'>('customer')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -54,9 +55,56 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [loginError, setLoginError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [oauthEmail, setOauthEmail] = useState<string | null>(null)
+  const [oauthName, setOauthName] = useState<string | null>(null)
 
   useEffect(() => {
     seedIfEmpty().then(() => setIsLoading(false))
+
+    supabase.auth.getSession().then(({ data }) => {
+      const session = data.session
+      if (!session?.user?.email) return
+
+      const normalizedEmail = session.user.email.toLowerCase().trim()
+      const alreadyCustomer = db.customers.find((c) => c.active && c.email?.toLowerCase() === normalizedEmail)
+      const alreadyWorker = db.workers.find((w) => w.active && w.email?.toLowerCase() === normalizedEmail)
+
+      if (alreadyCustomer) {
+        onLogin({ id: alreadyCustomer.id, role: 'customer', name: alreadyCustomer.name })
+        return
+      }
+
+      if (alreadyWorker) {
+        onLogin({ id: alreadyWorker.id, role: 'worker', name: alreadyWorker.name })
+        return
+      }
+
+      setOauthEmail(normalizedEmail)
+      setOauthName(
+        (session.user.user_metadata?.full_name as string | undefined) ||
+          (session.user.user_metadata?.name as string | undefined) ||
+          null,
+      )
+      setActiveTab('oauth_role')
+    })
+  }, [])
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user?.email) return
+      const normalizedEmail = session.user.email.toLowerCase().trim()
+      setOauthEmail(normalizedEmail)
+      setOauthName(
+        (session.user.user_metadata?.full_name as string | undefined) ||
+          (session.user.user_metadata?.name as string | undefined) ||
+          null,
+      )
+      setActiveTab('oauth_role')
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const handleRoleSelect = (selectedRole: 'customer' | 'worker') => {
@@ -64,6 +112,39 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
     setLoginError('')
     setPassword('')
     setActiveTab('signup_form')
+  }
+
+  const handleOAuthStart = async (provider: 'google' | 'facebook') => {
+    setLoginError('')
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    })
+    if (error) setLoginError(error.message)
+  }
+
+  const handleOAuthRoleSelect = (selectedRole: 'customer' | 'worker') => {
+    setLoginError('')
+
+    if (!oauthEmail) {
+      setLoginError('Please try again')
+      return
+    }
+
+    const displayName = (oauthName || '').trim() || oauthEmail.split('@')[0]
+
+    if (selectedRole === 'customer') {
+      const existing = db.customers.find((c) => c.active && c.email?.toLowerCase() === oauthEmail)
+      const c = existing || createCustomer({ name: displayName, email: oauthEmail })
+      onLogin({ id: c.id, role: 'customer', name: c.name })
+      return
+    }
+
+    const existing = db.workers.find((w) => w.active && w.email?.toLowerCase() === oauthEmail)
+    const w = existing || createWorker({ name: displayName, email: oauthEmail })
+    onLogin({ id: w.id, role: 'worker', name: w.name })
   }
 
   const handleCreateAccount = () => {
@@ -332,13 +413,102 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
 
             {/* Social Login */}
             <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all">
+              <button
+                onClick={() => void handleOAuthStart('google')}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all"
+              >
                 <Chrome className="w-4 h-4" />
                 <span className="text-xs font-medium text-gray-700">Sign in with Google</span>
               </button>
-              <button className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-blue-500 text-white hover:bg-blue-600 transition-all">
+              <button
+                onClick={() => void handleOAuthStart('facebook')}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-blue-500 text-white hover:bg-blue-600 transition-all"
+              >
                 <Facebook className="w-4 h-4" />
                 <span className="text-xs font-medium">Sign in with Facebook</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (activeTab === 'oauth_role') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `linear-gradient(135deg, ${THEME.bg} 0%, #ffffff 100%)` }}>
+        <div className="w-full max-w-sm">
+          <button onClick={() => setActiveTab('welcome')} className="mb-4 flex items-center gap-2 text-gray-500 hover:text-gray-700">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">Back</span>
+          </button>
+
+          <div className="bg-white rounded-3xl shadow-lg p-6">
+            <WelcomeIllustration />
+
+            <h2 className="text-xl font-bold text-gray-800 text-center mb-1">Choose Account Type</h2>
+            <p className="text-gray-500 text-center text-sm mb-6">
+              Continue as Customer or Worker
+            </p>
+
+            {loginError && (
+              <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                <p className="text-red-600 text-sm">{loginError}</p>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleOAuthRoleSelect('customer')}
+                className="w-full bg-white rounded-2xl border border-gray-200 p-4 hover:border-green-300 hover:shadow-sm transition-all text-left"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: THEME.primaryLight }}>
+                    <Search className="w-6 h-6" style={{ color: THEME.primary }} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800">Customer</h3>
+                    <p className="text-xs text-gray-500">I need skilled workers</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleOAuthRoleSelect('worker')}
+                className="w-full bg-white rounded-2xl border border-gray-200 p-4 hover:border-green-300 hover:shadow-sm transition-all text-left"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50">
+                    <Briefcase className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800">Worker</h3>
+                    <p className="text-xs text-gray-500">I want to provide services</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-gray-200" />
+              <span className="text-xs text-gray-400">Or</span>
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => void handleOAuthStart('google')}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all"
+              >
+                <Chrome className="w-4 h-4" />
+                <span className="text-xs font-medium text-gray-700">Google</span>
+              </button>
+              <button
+                onClick={() => void handleOAuthStart('facebook')}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-blue-500 text-white hover:bg-blue-600 transition-all"
+              >
+                <Facebook className="w-4 h-4" />
+                <span className="text-xs font-medium">Facebook</span>
               </button>
             </div>
           </div>
