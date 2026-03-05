@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { SessionUser } from '../lib/types'
 import { useDBSnapshot } from '../lib/hooks'
-import { refreshDB } from '../lib/db'
+import { createCustomer, createWorker, refreshDB } from '../lib/db'
 import { 
   Mail, Lock, ArrowLeft, UserCog, 
   Chrome, Facebook, Search, Briefcase
@@ -44,8 +44,10 @@ const WelcomeIllustration = () => (
 
 export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void }) {
   const db = useDBSnapshot()
-  const [activeTab, setActiveTab] = useState<'welcome' | 'login' | 'signup'>('welcome')
-  const [_role, _setRole] = useState<'customer' | 'worker'>('customer')
+  const [activeTab, setActiveTab] = useState<'welcome' | 'login' | 'signup' | 'signup_form'>('welcome')
+  const [role, setRole] = useState<'customer' | 'worker'>('customer')
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -58,8 +60,48 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   }, [])
 
   const handleRoleSelect = (selectedRole: 'customer' | 'worker') => {
-    _setRole(selectedRole)
-    setActiveTab('signup')
+    setRole(selectedRole)
+    setLoginError('')
+    setActiveTab('signup_form')
+  }
+
+  const handleCreateAccount = () => {
+    setLoginError('')
+
+    if (isLoading) {
+      setLoginError('Please wait, loading...')
+      return
+    }
+
+    if (!name.trim()) {
+      setLoginError('Please enter your name')
+      return
+    }
+
+    if (!email.trim()) {
+      setLoginError('Please enter email')
+      return
+    }
+
+    const normalizedEmail = email.toLowerCase().trim()
+
+    const adminExists = db.admins.some((a) => a.active && a.email?.toLowerCase() === normalizedEmail)
+    const customerExists = db.customers.some((c) => c.active && c.email?.toLowerCase() === normalizedEmail)
+    const workerExists = db.workers.some((w) => w.active && w.email?.toLowerCase() === normalizedEmail)
+
+    if (adminExists || customerExists || workerExists) {
+      setLoginError('Email already exists')
+      return
+    }
+
+    if (role === 'customer') {
+      const c = createCustomer({ name: name.trim(), email: normalizedEmail, phone: phone.trim() || undefined })
+      onLogin({ id: c.id, role: 'customer', name: c.name })
+      return
+    }
+
+    const w = createWorker({ name: name.trim(), email: normalizedEmail, phone: phone.trim() || undefined })
+    onLogin({ id: w.id, role: 'worker', name: w.name })
   }
 
   const handleLogin = () => {
@@ -363,9 +405,9 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
             <p className="text-gray-500 text-center text-sm mb-6">Choose how you want to use Fannu Bazaar</p>
 
             <div className="space-y-3">
-              <button 
-                onClick={() => handleRoleSelect('customer')} 
-                className="w-full bg-white rounded-2xl border-2 border-gray-100 p-4 hover:border-green-200 transition-all text-left"
+              <button
+                onClick={() => handleRoleSelect('customer')}
+                className="w-full bg-white rounded-2xl border border-gray-200 p-4 hover:border-green-300 hover:shadow-sm transition-all text-left"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: THEME.primaryLight }}>
@@ -375,12 +417,15 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
                     <h3 className="font-semibold text-gray-800">Find Skills</h3>
                     <p className="text-xs text-gray-500">I need skilled workers</p>
                   </div>
+                  <div className="text-xs font-semibold" style={{ color: THEME.primary }}>
+                    Continue
+                  </div>
                 </div>
               </button>
 
-              <button 
-                onClick={() => handleRoleSelect('worker')} 
-                className="w-full bg-white rounded-2xl border-2 border-gray-100 p-4 hover:border-amber-200 transition-all text-left"
+              <button
+                onClick={() => handleRoleSelect('worker')}
+                className="w-full bg-white rounded-2xl border border-gray-200 p-4 hover:border-green-300 hover:shadow-sm transition-all text-left"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50">
@@ -390,7 +435,93 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
                     <h3 className="font-semibold text-gray-800">Offer Skills</h3>
                     <p className="text-xs text-gray-500">I want to provide services</p>
                   </div>
+                  <div className="text-xs font-semibold" style={{ color: THEME.primary }}>
+                    Continue
+                  </div>
                 </div>
+              </button>
+            </div>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-500">
+                Already have an account?{' '}
+                <button onClick={() => setActiveTab('login')} className="font-medium" style={{ color: THEME.primary }}>
+                  Log In
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (activeTab === 'signup_form') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `linear-gradient(135deg, ${THEME.bg} 0%, #ffffff 100%)` }}>
+        <div className="w-full max-w-sm">
+          <button onClick={() => setActiveTab('signup')} className="mb-4 flex items-center gap-2 text-gray-500 hover:text-gray-700">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">Back</span>
+          </button>
+
+          <div className="bg-white rounded-3xl shadow-lg p-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: role === 'customer' ? THEME.primaryLight : '#FEF3C7' }}>
+                {role === 'customer' ? (
+                  <Search className="w-7 h-7" style={{ color: THEME.primary }} />
+                ) : (
+                  <Briefcase className="w-7 h-7 text-amber-500" />
+                )}
+              </div>
+              <h2 className="text-xl font-bold text-gray-800">Create Account</h2>
+              <p className="text-gray-500 text-sm">You are signing up as a {role === 'customer' ? 'Customer' : 'Worker'}</p>
+            </div>
+
+            {loginError && (
+              <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                <p className="text-red-600 text-sm">{loginError}</p>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-gray-600 mb-1.5 block">Full Name</label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 focus:outline-none focus:border-green-400 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-600 mb-1.5 block">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="example@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 focus:outline-none focus:border-green-400 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-600 mb-1.5 block">Phone (optional)</label>
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+960..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 focus:outline-none focus:border-green-400 text-sm"
+                />
+              </div>
+
+              <button
+                onClick={handleCreateAccount}
+                className="w-full py-3.5 rounded-xl font-semibold text-white shadow-md transition-all active:scale-95"
+                style={{ background: THEME.primary }}
+              >
+                Create Account
               </button>
             </div>
 
