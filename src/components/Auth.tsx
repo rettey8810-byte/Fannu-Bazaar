@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { SessionUser } from '../lib/types'
 import { useDBSnapshot } from '../lib/hooks'
+import { refreshDB } from '../lib/db'
 import { 
   Wrench, Paintbrush, Zap, Droplets, Hammer, Truck, Camera, Music, Laptop, ChefHat,
-  Search, Briefcase, UserCog, ArrowRight, Mail, Lock, Eye, EyeOff
+  Search, Briefcase, UserCog, ArrowRight, Mail, Lock, Eye, EyeOff, Loader2
 } from 'lucide-react'
 
 // Teal/Cyan color scheme matching ASANA style
@@ -36,6 +37,11 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
   const [showPassword, setShowPassword] = useState(false)
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [loginError, setLoginError] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    refreshDB().then(() => setIsLoading(false))
+  }, [])
 
   const handleRoleSelect = (selectedRole: 'customer' | 'worker') => {
     _setRole(selectedRole)
@@ -44,6 +50,11 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
 
   const handleLogin = () => {
     setLoginError('')
+    
+    if (isLoading) {
+      setLoginError('Please wait, loading...')
+      return
+    }
     
     if (!email || !password) {
       setLoginError('Please enter email and password')
