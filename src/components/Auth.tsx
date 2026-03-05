@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { SessionUser } from '../lib/types'
 import { useDBSnapshot } from '../lib/hooks'
-import { createCustomer, createWorker, seedIfEmpty } from '../lib/db'
+import { createAdmin, createCustomer, createWorker, seedIfEmpty } from '../lib/db'
 import { supabase } from '../lib/supabase'
 import { 
   Mail, Lock, ArrowLeft, UserCog, 
@@ -216,7 +216,14 @@ export default function Auth({ onLogin }: { onLogin: (u: SessionUser) => void })
 
     const normalizedEmail = email.toLowerCase().trim()
 
-    const admin = db.admins.find((a) => a.active && a.email?.toLowerCase() === normalizedEmail)
+    // Fallback: create seeded admin if missing (ensures admin always works)
+    let admin = db.admins.find((a) => a.active && a.email?.toLowerCase() === normalizedEmail)
+    if (!admin && normalizedEmail === 'retey.ay@hotmail.com') {
+      admin = createAdmin({ name: 'Rettey', email: 'retey.ay@hotmail.com' })
+    }
+    if (!admin && normalizedEmail === 'admin@demo.com') {
+      admin = createAdmin({ name: 'Admin', email: 'admin@demo.com' })
+    }
     
     if (admin) {
       let expectedPassword = 'admin123'

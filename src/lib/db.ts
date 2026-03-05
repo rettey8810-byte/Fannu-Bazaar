@@ -61,6 +61,19 @@ export function deleteCustomer(params: { customerId: string }) {
   save(db)
 }
 
+export function createAdmin(input: { name: string; email: string }) {
+  const db = load()
+  const a: AdminProfile = {
+    id: `a_${Math.random().toString(16).slice(2)}`,
+    name: input.name,
+    email: input.email,
+    active: true,
+  }
+  db.admins.unshift(a)
+  save(db)
+  return a
+}
+
 export function createWorker(input: { name: string; email?: string; password?: string; phone?: string }) {
   const db = load()
   const w: WorkerProfile = {
