@@ -15,7 +15,6 @@ import type { ServiceCategory, ServiceRequest, SessionUser } from '../lib/types'
 import WorkerProfileForm from './WorkerProfileForm'
 import Illustration from './Illustration'
 import CategoryPicker from './CategoryPicker'
-import { ALL_CATEGORIES } from '../lib/categoryConfig'
 import {
   Search, Briefcase, CheckCircle, Clock, Star, User,
   Wrench, DollarSign, Calendar, MapPin
@@ -36,7 +35,6 @@ const THEME = {
   pink: '#EC4899',
 }
 
-const CATEGORIES: Array<ServiceCategory | 'All'> = ['All', ...ALL_CATEGORIES]
 
 function statusLabel(s: ServiceRequest['status']) { return s.replace(/_/g, ' ') }
 function formatIso(iso?: string) {
@@ -134,8 +132,8 @@ export default function WorkerDashboard({ user }: { user: SessionUser }) {
             <div className="space-y-6">
               {/* Filters */}
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div>
+                <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
+                  <div className="md:col-span-1 lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                     <CategoryPicker
                       allowAllCategory
@@ -147,24 +145,28 @@ export default function WorkerDashboard({ user }: { user: SessionUser }) {
                       }}
                       className="mb-4"
                     />
-                    <select
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      value={browseCategory}
-                      onChange={(e) => {
-                        const next = e.target.value as ServiceCategory | 'All'
-                        setBrowseCategory(next)
-                        setBrowseSubcategory(undefined)
-                      }}
-                    >
-                      {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Search Requests</label>
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-12 pr-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500" value={browseQuery} onChange={(e) => setBrowseQuery(e.target.value)} placeholder="Search by title, description, location..." />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <input
+                      type="text"
+                      value={browseQuery}
+                      onChange={(e) => setBrowseQuery(e.target.value)}
+                      placeholder="Search in title, description..."
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setBrowseCategory('All')
+                        setBrowseSubcategory(undefined)
+                        setBrowseQuery('')
+                      }}
+                      className="w-full rounded-xl bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
+                    >
+                      Clear Filters
+                    </button>
                   </div>
                 </div>
               </div>

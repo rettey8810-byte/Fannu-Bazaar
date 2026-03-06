@@ -22,7 +22,7 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-20 border-b border-gray-200/60 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             <img
               src="/logo.png"
@@ -60,7 +60,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-6">
+      <main className="mx-auto max-w-7xl px-4 py-6 pb-24 md:pb-6 lg:px-6">
         {user.role === 'admin' ? (
           <AdminDashboard user={user} />
         ) : user.role === 'customer' ? (

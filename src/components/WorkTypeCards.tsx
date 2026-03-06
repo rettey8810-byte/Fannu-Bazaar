@@ -17,7 +17,7 @@ export default function WorkTypeCards({
 
   return (
     <div className={className}>
-      <div className={`grid gap-3 ${dense ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+      <div className={`grid gap-3 ${dense ? 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
         {items.map((item) => {
           const active = item.category === value
           return (
@@ -25,7 +25,7 @@ export default function WorkTypeCards({
               key={item.category}
               type="button"
               onClick={() => onChange(item.category)}
-              className={`group rounded-2xl border p-4 text-left shadow-sm transition-all hover:shadow-md ${active ? 'border-emerald-300 bg-emerald-50/60' : 'border-gray-200 bg-white hover:border-emerald-200'}`}
+              className={`group rounded-2xl border p-4 text-left shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 ${active ? 'border-emerald-300 bg-emerald-50/60 ring-2 ring-emerald-100' : 'border-gray-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/30'}`}
             >
               <div className="flex items-center gap-4">
                 <div className={`rounded-2xl p-2 ${active ? 'bg-white' : 'bg-gray-50'}`}>

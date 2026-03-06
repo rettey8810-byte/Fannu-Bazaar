@@ -52,12 +52,12 @@ export default function CategoryPicker({
 
   return (
     <div className={className}>
-      <div className="mb-3">
+      <div className="mb-4">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search category or subcategory..."
-          className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
         />
       </div>
 
@@ -81,9 +81,9 @@ export default function CategoryPicker({
       </div>
 
       {activeCategory && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-4">
-          <div className="text-sm font-semibold text-gray-900">Sub-categories</div>
-          <div className="mt-2 flex flex-wrap gap-2">
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="text-sm font-semibold text-gray-900 mb-3">Sub-categories</div>
+          <div className="flex flex-wrap gap-2">
             {subcategoryOptions.map((s) => {
               const active = s === subcategory
               return (
@@ -91,7 +91,7 @@ export default function CategoryPicker({
                   key={s}
                   type="button"
                   onClick={() => onChange({ category: activeCategory, subcategory: s })}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition-colors ${active ? 'bg-emerald-50 text-emerald-700 ring-emerald-100' : 'bg-gray-50 text-gray-700 ring-gray-200 hover:bg-gray-100'}`}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition-all hover:scale-105 ${active ? 'bg-emerald-50 text-emerald-700 ring-emerald-100 shadow-sm' : 'bg-gray-50 text-gray-700 ring-gray-200 hover:bg-gray-100 hover:ring-gray-300'}`}
                 >
                   {s}
                 </button>
@@ -99,7 +99,7 @@ export default function CategoryPicker({
             })}
 
             {subcategoryOptions.length === 0 && (
-              <div className="text-xs text-gray-500">No matching sub-categories.</div>
+              <div className="text-xs text-gray-500 italic">No matching sub-categories.</div>
             )}
           </div>
         </div>
