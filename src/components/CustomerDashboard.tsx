@@ -12,6 +12,7 @@ import {
 import { useDBSnapshot } from '../lib/hooks'
 import WorkerProfileModal from './WorkerProfileModal'
 import Illustration from './Illustration'
+import WorkTypeCards from './WorkTypeCards'
 import type { ServiceCategory, ServiceRequest, SessionUser, WorkerProfile } from '../lib/types'
 import {
   Search, Briefcase, CheckCircle, Plus, Star, User,
@@ -141,6 +142,24 @@ export default function CustomerDashboard({ user }: { user: SessionUser }) {
                 <div className="grid gap-4 md:grid-cols-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <div className="mb-3">
+                      <button
+                        type="button"
+                        onClick={() => setWorkerCategory('All')}
+                        className={`mb-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 transition-colors ${workerCategory === 'All' ? 'bg-emerald-50 text-emerald-700 ring-emerald-100' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'}`}
+                      >
+                        All Categories
+                      </button>
+                      {workerCategory !== 'All' && (
+                        <div className="text-xs text-gray-500">Selected: {workerCategory}</div>
+                      )}
+                    </div>
+                    <WorkTypeCards
+                      value={workerCategory === 'All' ? 'AC' : (workerCategory as ServiceCategory)}
+                      onChange={(c) => setWorkerCategory(c)}
+                      dense
+                      className="mb-4"
+                    />
                     <select className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500" value={workerCategory} onChange={(e) => setWorkerCategory(e.target.value as ServiceCategory | 'All')}>
                       {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -270,6 +289,7 @@ function ServiceRequestForm({ onSubmit }: { onSubmit: (values: { category: Servi
       <div className="grid gap-5 md:grid-cols-2">
         <div>
           <label className="block text-sm font-semibold text-gray-800 mb-2">Service Category</label>
+          <WorkTypeCards value={category} onChange={setCategory} dense className="mb-4" />
           <select className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500" value={category} onChange={(e) => setCategory(e.target.value as ServiceCategory)}>
             {CATEGORIES.filter(c => c !== 'All').map((c) => <option key={c} value={c}>{c}</option>)}
           </select>

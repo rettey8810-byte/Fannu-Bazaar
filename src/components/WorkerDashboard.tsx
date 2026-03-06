@@ -14,6 +14,7 @@ import { useDBSnapshot } from '../lib/hooks'
 import type { ServiceCategory, ServiceRequest, SessionUser } from '../lib/types'
 import WorkerProfileForm from './WorkerProfileForm'
 import Illustration from './Illustration'
+import WorkTypeCards from './WorkTypeCards'
 import {
   Search, Briefcase, CheckCircle, Clock, Star, User,
   Wrench, DollarSign, Calendar, MapPin
@@ -129,6 +130,24 @@ export default function WorkerDashboard({ user }: { user: SessionUser }) {
                 <div className="grid gap-4 md:grid-cols-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <div className="mb-3">
+                      <button
+                        type="button"
+                        onClick={() => setBrowseCategory('All')}
+                        className={`mb-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 transition-colors ${browseCategory === 'All' ? 'bg-emerald-50 text-emerald-700 ring-emerald-100' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'}`}
+                      >
+                        All Categories
+                      </button>
+                      {browseCategory !== 'All' && (
+                        <div className="text-xs text-gray-500">Selected: {browseCategory}</div>
+                      )}
+                    </div>
+                    <WorkTypeCards
+                      value={browseCategory === 'All' ? 'AC' : (browseCategory as ServiceCategory)}
+                      onChange={(c) => setBrowseCategory(c)}
+                      dense
+                      className="mb-4"
+                    />
                     <select className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500" value={browseCategory} onChange={(e) => setBrowseCategory(e.target.value as ServiceCategory | 'All')}>
                       {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
