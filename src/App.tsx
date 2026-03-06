@@ -21,23 +21,37 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#2d3748]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      <header className="sticky top-0 z-20 border-b border-gray-200/60 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Fannu Bazaar" className="h-10 w-10 rounded-xl object-contain" />
-            <div>
-              <div className="text-lg font-semibold">Fannu Bazaar</div>
-              <div className="text-xs text-white/60">Service marketplace demo</div>
+            <img
+              src="/logo.png"
+              alt="Fannu Bazaar"
+              className="h-10 w-10 rounded-xl bg-white object-contain shadow-sm ring-1 ring-gray-200"
+            />
+            <div className="leading-tight">
+              <div className="text-base font-semibold text-gray-900">Fannu Bazaar</div>
+              <div className="text-xs text-gray-500">Service marketplace</div>
             </div>
           </div>
+
           <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="rounded-xl border border-white/10 bg-white/20 px-3 py-2 text-sm text-white/70">
-                {user.role} • {user.name}
+            <span className="hidden sm:inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+              {user.role}
+            </span>
+
+            <div className="flex items-center gap-2 rounded-2xl bg-gray-50 px-3 py-2 ring-1 ring-gray-200">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">
+                {(user.name ?? 'U').trim().charAt(0).toUpperCase()}
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-sm font-semibold text-gray-900">{user.name}</div>
+                <div className="text-[11px] text-gray-500">Signed in</div>
               </div>
             </div>
+
             <button
-              className="rounded-xl border border-white/10 bg-white/20 px-3 py-2 text-sm text-white hover:bg-white/30"
+              className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800"
               onClick={() => setUser(null)}
             >
               Sign out
